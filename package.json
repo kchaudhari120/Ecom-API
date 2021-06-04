@@ -1,0 +1,19 @@
+{
+  "name": "ecom-api",
+  "version": "1.0.0",
+  "description": "eCommerce API ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kchaudhari120/Ecom-API.git"
+  },
+  "author": "Kiran Chaudhari",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kchaudhari120/Ecom-API/issues"
+  },
+  "homepage": "https://github.com/kchaudhari120/Ecom-API#readme"
+}
