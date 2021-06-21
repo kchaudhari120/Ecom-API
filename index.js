@@ -1,5 +1,7 @@
 const express = require("express")
 const app = express()
+// creating connection here
+require('./database/connection')()
 const morgan = require("morgan")
 
 app.use(express.json())
