@@ -1,14 +1,13 @@
-const { string, number } = require('joi')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const productSchema = new Schema({
-    name: { type: string, require: true },
-    price: { type: Number, require: true, },
+    name: { type: String, required: true },
+    price: { type: Number, required: true, },
     discount: { type: Number, default: 0 },
-    productImage: { type: String, require: true },
-    category : {type : mongoose.Types.ObjectId, ref : 'category', require : true },
-    active : {type : Boolean, default : true}
+    productImage: { type: String, required: true },
+    category : {type : mongoose.Types.ObjectId, ref : 'category', required : true },
+    active : {type : Boolean, required : true}
 },
     {
         timestamps: {
@@ -19,4 +18,4 @@ const productSchema = new Schema({
 )
 
 const Product = mongoose.model('product', productSchema)
-model.exports = { Product }
+module.exports = { Product }

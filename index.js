@@ -3,6 +3,7 @@ const app = express()
 // creating connection here
 require('./database/connection')()
 const morgan = require("morgan")
+const handleErrors = require("./middlewares/error-handler")
 const { categoryRouter } = require("./router/category-router")
 const { orderRouter } = require("./router/order-router")
 const { productRouter } = require("./router/product-router")
@@ -32,3 +33,9 @@ APIRouter.use('/users', userRouter)
 APIRouter.use('/products', productRouter)
 APIRouter.use('/orders', orderRouter)
 APIRouter.use('/categories', categoryRouter)
+
+
+
+
+
+app.use(handleErrors)

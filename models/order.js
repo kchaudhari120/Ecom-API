@@ -2,12 +2,12 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const orderSchema = new Schema({
-    price: { type: Number, require: true },
-    product: { type: mongoose.Types.ObjectId, ref: 'product', require: true },
+    price: { type: Number, required: true },
+    product: { type: mongoose.Types.ObjectId, ref: 'product', required: true },
     user: { type: mongoose.Types.ObjectId, ref: 'user', require: true },
-    address: { type: String, require: true },
-    quantity: { type: Number, require: true },
-    payment_method: { type: String, require: true, default: 'COD' },
+    address: { type: String, required: true },
+    quantity: { type: Number, required: true },
+    payment_method: { type: String, required: true, default: 'COD' },
     status: { type: Boolean, default: false }
 },
     {
@@ -18,4 +18,4 @@ const orderSchema = new Schema({
     }
 )
 const Order = mongoose.model('order', orderSchema)
-model.exports = { Order }
+module.exports = { Order }

@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const categorySchema = new Schema({
-    name: { type: String, require: true }
+    name: { type: String, required: true }
 },
     {
         timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
@@ -10,4 +10,4 @@ const categorySchema = new Schema({
 )
 
 const Category = mongoose.model('category', categorySchema)
-model.exports = {Category}
+module.exports = {Category}
