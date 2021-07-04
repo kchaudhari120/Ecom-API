@@ -7,7 +7,7 @@ function getUsers(req, res, next) {
     res.json({ 'message': 'user API running .... from controller' })
 }
 
-async function saveUser(req, res, next) {
+function validateUserForRegistation(user) {
     const schema = new Joi.object({
         name: Joi.string().max(40).min(4).required(),
         email: Joi.string().email().required(),
@@ -16,8 +16,13 @@ async function saveUser(req, res, next) {
         repassword: Joi.string().min(6).max(30).required(),
     })
 
-    const result = schema.validate(req.body);
+    const result = schema.validate(user);
+    return result;
+}
 
+async function saveUser(req, res, next) {
+
+    const result = validateUserForRegistation(req.body)
     if (result.error) {
         //throw error
         // res.status(400);
@@ -32,17 +37,19 @@ async function saveUser(req, res, next) {
         return next(new Error("password not matched..."))
     }
 
-    let user = await User.findOne({ email: userData.email });
-
-    if (!user) {
-        userData.password = passwordHash.generate(userData.password) 
+    //check user is unique
+    // let user = await User.findOne({ email: userData.email });
+    // OR
+    let isExist = await User.isExist(userData.email)
+    if (!isExist) {
+        userData.password = passwordHash.generate(userData.password)
         const user = await new User(userData).save();
         res.json(user)
     } else {
         //throw error
         res.status(400);
         return next(new Error("Email is already exist..."))
-        
+
     }
 }
 
