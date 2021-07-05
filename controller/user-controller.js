@@ -53,8 +53,46 @@ async function saveUser(req, res, next) {
     }
 }
 
+function validateLoginCredential(user) {
+    const schema = new Joi.object({
+        email : Joi.string().email().required(),
+        password : Joi.string().min(6).max(30).required()
+    })
+    const result = schema.validate(user);
+    return result
+}
 
-module.exports = { getUsers, saveUser }
+async function loginUser(req, res, next) {
+    const result = validateLoginCredential(req.body);
+
+    if(result.error){
+        res.status(400)
+        const err = new Error(result.error.details[0].message)
+        return next(err)
+    }
+
+    const {email, password} = result.value;
+    const user = await User.findOne({email})
+    
+    if(user){
+        //check password
+        const isPasswordMatch = passwordHash.verify(password, user.password)
+
+        if(isPasswordMatch){
+            //login success
+            res.json({"success":"login success"})
+        }
+
+    }
+        res.status(400)
+        const err = new Error("Email OR Password invalid...")
+        return next(err)
+
+        
+}
+
+
+module.exports = { getUsers, saveUser, loginUser }
 
 
 
