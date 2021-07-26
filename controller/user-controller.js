@@ -1,7 +1,8 @@
 const { User } = require("../models/user")
 const Joi = require('joi')
 const passwordHash = require("password-hash")
-
+const jwt = require("jsonwebtoken")
+const { response } = require("express")
 
 function getUsers(req, res, next) {
     res.json({ 'message': 'user API running .... from controller' })
@@ -55,8 +56,8 @@ async function saveUser(req, res, next) {
 
 function validateLoginCredential(user) {
     const schema = new Joi.object({
-        email : Joi.string().email().required(),
-        password : Joi.string().min(6).max(30).required()
+        email: Joi.string().email().required(),
+        password: Joi.string().min(6).max(30).required()
     })
     const result = schema.validate(user);
     return result
@@ -65,34 +66,90 @@ function validateLoginCredential(user) {
 async function loginUser(req, res, next) {
     const result = validateLoginCredential(req.body);
 
-    if(result.error){
+    if (result.error) {
         res.status(400)
         const err = new Error(result.error.details[0].message)
         return next(err)
     }
 
-    const {email, password} = result.value;
-    const user = await User.findOne({email})
-    
-    if(user){
+    const { email, password } = result.value;
+    const user = await User.findOne({ email })
+    // console.log(user);
+    if (user) {
         //check password
         const isPasswordMatch = passwordHash.verify(password, user.password)
 
-        if(isPasswordMatch){
+        if (isPasswordMatch) {
             //login success
-            res.json({"success":"login success"})
+            const payload = {
+                _id: user._id,
+                email: user.email,
+                isAdmin: user.isAdmin
+            }
+            const token = jwt.sign(payload, "123456")
+            return res.json({ "success": "login success", "token": token })
+
         }
 
     }
-        res.status(400)
-        const err = new Error("Email OR Password invalid...")
-        return next(err)
+    res.status(400)
+    const err = new Error("Email OR Password invalid...")
+    return next(err)
 
-        
+
 }
 
+async function updateUser(req, res, next) {
+    const bearenToken = req.headers.authorization
+    // console.log(bearenToken);
+    let token = null
+    if (bearenToken) {
+        token = bearenToken.split(" ")[1]
+        console.log({ token });
+        try {
+            const payload = jwt.verify(token, "123456")
+            console.log({ payload }); 
+            // console.log(req.body);
 
-module.exports = { getUsers, saveUser, loginUser }
+            const schema =  Joi.object({
+                phone : Joi.string().max(12).min(10),
+                name : Joi.string().min(4).max(40)
+            })
+            const result = schema.validate(req.body)
+            if(result.error){
+                res.status(400)
+                return next(new Error(result.error.details[0].message))   
+            }else{
+            //    let user = User.findById(payload._id)
+            //    user = Object.assign(user, result.value) 
+            //    user = await user.save()
+            //    res.json({user})
+
+               const user = await User.findOneAndUpdate({_id : payload._id},
+                    {
+                        $set : result.value
+                    },{
+                        new : true
+                    })
+
+
+                    res.json(user)
+
+            }
+
+        } catch (error) {
+            res.status(401)
+            return next(new Error("Please login to "))
+        }
+
+    } else {
+        res.status(401)
+        return next(new Error("Please login to update"))
+    }
+    
+}
+
+module.exports = { getUsers, saveUser, loginUser, updateUser }
 
 
 
