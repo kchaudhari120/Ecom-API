@@ -100,53 +100,40 @@ async function loginUser(req, res, next) {
 }
 
 async function updateUser(req, res, next) {
-    const bearenToken = req.headers.authorization
-    // console.log(bearenToken);
-    let token = null
-    if (bearenToken) {
-        token = bearenToken.split(" ")[1]
-        console.log({ token });
-        try {
-            const payload = jwt.verify(token, "123456")
-            console.log({ payload }); 
-            // console.log(req.body);
 
-            const schema =  Joi.object({
-                phone : Joi.string().max(12).min(10),
-                name : Joi.string().min(4).max(40)
-            })
-            const result = schema.validate(req.body)
-            if(result.error){
-                res.status(400)
-                return next(new Error(result.error.details[0].message))   
-            }else{
-            //    let user = User.findById(payload._id)
-            //    user = Object.assign(user, result.value) 
-            //    user = await user.save()
-            //    res.json({user})
+    const loggedInUser = req.session.user
+    console.log("loggedInUser", loggedInUser);
+    const schema = Joi.object({
+        phone: Joi.string().max(12).min(10),
+        name: Joi.string().min(4).max(40)
+    })
 
-               const user = await User.findOneAndUpdate({_id : payload._id},
-                    {
-                        $set : result.value
-                    },{
-                        new : true
-                    })
-
-
-                    res.json(user)
-
-            }
-
-        } catch (error) {
-            res.status(401)
-            return next(new Error("Please login to "))
-        }
-
+    const result = schema.validate(req.body)
+    if (result.error) {
+        res.status(400)
+        return next(new Error(result.error.details[0].message))
     } else {
-        res.status(401)
-        return next(new Error("Please login to update"))
+        //    let user = User.findById(payload._id)
+        //    user = Object.assign(user, result.value) 
+        //    user = await user.save()
+        //    res.json({user})
+
+        const user = await User.findOneAndUpdate({ _id: loggedInUser._id },
+            {
+                $set: result.value
+            }, {
+            new: true
+        })
+
+
+        res.json(user)
+
     }
-    
+
+
+
+
+
 }
 
 module.exports = { getUsers, saveUser, loginUser, updateUser }
