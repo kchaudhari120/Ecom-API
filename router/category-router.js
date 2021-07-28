@@ -1,8 +1,16 @@
 const express = require('express')
-const { getCategories } = require('../controller/categoty-controller')
+const { 
+    getCategories, 
+    createCategory 
+} = require('../controller/categoty-controller')
+const {adminAuthMiddleware} = require('../middlewares/user-auth-middleware')
 const categoryRouter = express.Router()
 
-categoryRouter.get('', getCategories)
+//api/categories/
+categoryRouter.get('/', getCategories)
+categoryRouter.post('/', adminAuthMiddleware, createCategory)
+
+
 
 
 module.exports = {categoryRouter}
