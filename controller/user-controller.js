@@ -136,7 +136,29 @@ async function updateUser(req, res, next) {
 
 }
 
-module.exports = { getUsers, saveUser, loginUser, updateUser }
+async function updateUserById(req, res, next) {
+
+    const user_id = req.params.user_id;
+       
+        //    let user = await User.findById(user_id)
+        //    user = Object.assign(user, req.body) 
+        //    user = await user.save()
+        //    res.json({user})
+
+        const user = await User.findOneAndUpdate({ _id: user_id },
+            {
+                $set: req.body
+            }, {
+            new: true
+        })
+
+
+        res.json(user)
+
+    }
+
+
+module.exports = { getUsers, saveUser, loginUser, updateUser, updateUserById}
 
 
 
