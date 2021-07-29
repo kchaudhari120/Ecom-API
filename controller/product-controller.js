@@ -5,6 +5,7 @@ async function getProducts(req, res) {
     res.json({ products})
 }
  function createProduct(req, res, next){
+    console.log(req.file);
     res.json("create product hare")
 }
 
