@@ -1,8 +1,9 @@
 const { Category } = require('../models/category')
 const Joi = require('joi')
 
-function getCategories(req, res) {
-    res.json({ 'message': 'category API Running... from controller' })
+async function getCategories(req, res) {
+    const categories = await Category.find()
+    res.json({ categories })
 }
 
 async function createCategory(req, res, next) {
@@ -17,13 +18,8 @@ async function createCategory(req, res, next) {
         const category = new Category( name )
         const categoryResult = await category.save()
         res.json(categoryResult)
-
-        res.json("hello")
         return
     }
-
-
-
 
     res.status(400)
     const err = new Error(result.error.details[0].message)
