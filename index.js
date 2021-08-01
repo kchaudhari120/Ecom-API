@@ -1,8 +1,13 @@
 const express = require("express")
 const app = express()
+//config .env
+require('dotenv').config()
+const { UPLOAD_FOLDER } = process.env
+
 // creating connection here
 require('./database/connection')()
 const morgan = require("morgan")
+
 const handleErrors = require("./middlewares/error-handler")
 const { categoryRouter } = require("./router/category-router")
 const { orderRouter } = require("./router/order-router")
@@ -15,8 +20,8 @@ const APIRouter = express.Router()
 app.use(express.json())
 app.use(morgan('dev'))
 
-app.listen(3001, () => {
-    console.log("server starting on port number 3001");
+app.listen(process.env.PORT, () => {
+    console.log(`server starting on port number ${process.env.PORT}`);
 })
 
 app.get('/', (req, res) => {
@@ -37,5 +42,15 @@ APIRouter.use('/categories', categoryRouter)
 
 
 
+APIRouter.get('/'+UPLOAD_FOLDER+'/*',(req, res, next)=>{
+    const path = req.url;
+    // res.send(path)
+    // const filePath = __dirname+path;
+    const filePath = `${__dirname}${path}`;
+
+    res.sendFile(filePath, (Error)=>{
+        next()
+    })
+})
 
 app.use(handleErrors)

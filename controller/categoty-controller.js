@@ -1,9 +1,15 @@
 const { Category } = require('../models/category')
 const Joi = require('joi')
+const { Product } = require('../models/product')
 
 async function getCategories(req, res) {
     const categories = await Category.find()
     res.json({ categories })
+}
+async function getCategory(req, res, next) {
+    const _id = req.params.categoryId
+    const category = await Category.findOne({_id})
+    res.json({category})
 }
 
 async function createCategory(req, res, next) {
@@ -26,5 +32,11 @@ async function createCategory(req, res, next) {
     return next(err)
 }
 
+async function getProductByCategory(req, res, next) {
+    const _id = req.params.categoryId;
+    const products = await Product.find({category : _id})
+    res.json({products})
+}
 
-module.exports = { getCategories, createCategory }
+
+module.exports = { getCategories, createCategory, getCategory, getProductByCategory}

@@ -3,6 +3,7 @@ const Joi = require('joi')
 const passwordHash = require("password-hash")
 const jwt = require("jsonwebtoken")
 const { response } = require("express")
+const {JWT_KEY} = process.env
 
 function getUsers(req, res, next) {
     res.json({ 'message': 'user API running .... from controller' })
@@ -86,7 +87,7 @@ async function loginUser(req, res, next) {
                 email: user.email,
                 isAdmin: user.isAdmin
             }
-            const token = jwt.sign(payload, "123456")
+            const token = jwt.sign(payload, JWT_KEY)
             return res.json({ "success": "login success", "token": token })
 
         }

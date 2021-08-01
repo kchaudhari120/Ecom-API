@@ -1,10 +1,10 @@
 const express = require('express')
-const { getProducts, createProduct } = require('../controller/product-controller')
+const { getProducts, createProduct, getProduct} = require('../controller/product-controller')
 const { adminAuthMiddleware } = require('../middlewares/user-auth-middleware')
 const mongoose = require('mongoose')
 const path = require('path')
 const multer = require('multer')
-const UPLOAD_FOLDER = "media/products";
+const {UPLOAD_FOLDER} = process.env
 
 const tempMulter = multer({dest : UPLOAD_FOLDER})
 
@@ -19,14 +19,13 @@ var storage = multer.diskStorage({
     }
 });
 
-
-
 const upload = multer({storage})
 
 
 const productRouter = express.Router()
 
 productRouter.get('', getProducts)
+productRouter.get('/:productId', getProduct)
 productRouter.post('', adminAuthMiddleware, upload.single('image'),createProduct)
 
 

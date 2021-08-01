@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const JWT_KEY = "123456"
+const {JWT_KEY} = process.env
 
 function userAuthMiddleware(req, res, next) {
     try {
