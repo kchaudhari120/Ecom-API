@@ -3,6 +3,7 @@ const Joi = require('joi')
 const passwordHash = require("password-hash")
 const jwt = require("jsonwebtoken")
 const { response } = require("express")
+const { Order } = require("../models/order")
 const {JWT_KEY} = process.env
 
 function getUsers(req, res, next) {
@@ -158,8 +159,20 @@ async function updateUserById(req, res, next) {
 
     }
 
+async function getOrdersById(req, res, next) {
+    const userId = req.params.user_id;
+    const order = await Order.find({user : userId})
+    .populate([
+        {
+            path: 'product',
+            populate : 'category'
+        }
+    ])
+    ;
+    res.json({order})
+}
 
-module.exports = { getUsers, saveUser, loginUser, updateUser, updateUserById}
+module.exports = { getUsers, saveUser, loginUser, updateUser, updateUserById, getOrdersById}
 
 
 
