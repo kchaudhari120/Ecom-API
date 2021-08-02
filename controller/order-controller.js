@@ -2,8 +2,22 @@ const Joi = require("joi")
 const { Product } = require('../models/product')
 const { Order } = require('../models/order')
 
-function getOrders(req, res) {
-    res.json({ 'message': 'Order API running... from controller' })
+async function getOrders(req, res) {
+    // const order = await Order.find().populate('product user') // get data with actual product and user
+    const order = await Order.find()
+    .populate([
+        {
+            path : 'product',
+            populate : [
+                {path : 'category'}
+            ]
+        },
+        {path : 'user', select : '-password'}
+    ]) // get data with actual product and user
+
+    
+    res.json({ order })
+    console.log({order : order});
 }
 
 async function placeOrder(req, res, next) {
