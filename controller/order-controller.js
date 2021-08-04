@@ -59,5 +59,10 @@ async function placeOrder(req, res, next) {
     res.json({ saveOrders })
 }
 
+async function deleteOrder(req, res,next) {
+    const _id = req.params.orderId;
+    const result = await Order.deleteOne({_id});
+    res.json({result})
+}
 
-module.exports = { getOrders, placeOrder }
+module.exports = { getOrders, placeOrder, deleteOrder }
