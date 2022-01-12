@@ -5,19 +5,19 @@ const { Order } = require('../models/order')
 async function getOrders(req, res) {
     // const order = await Order.find().populate('product user') // get data with actual product and user
     const order = await Order.find()
-    .populate([
-        {
-            path : 'product',
-            populate : [
-                {path : 'category'}
-            ]
-        },
-        {path : 'user', select : '-password'}
-    ]) // get data with actual product and user
+        .populate([
+            {
+                path: 'product',
+                populate: [
+                    { path: 'category' }
+                ]
+            },
+            { path: 'user', select: '-password' }
+        ]) // get data with actual product and user
 
-    
+
     res.json({ order })
-    console.log({order : order});
+    console.log({ order: order });
 }
 
 async function placeOrder(req, res, next) {
@@ -59,10 +59,39 @@ async function placeOrder(req, res, next) {
     res.json({ saveOrders })
 }
 
-async function deleteOrder(req, res,next) {
+async function deleteOrder(req, res, next) {
     const _id = req.params.orderId;
-    const result = await Order.deleteOne({_id});
-    res.json({result})
+    const result = await Order.deleteOne({ _id });
+    res.json({ result })
+}
+async function updateOrder(req, res, next) {
+    const schema = Joi.object({
+        status: Joi.boolean(),
+        product: Joi.string(),
+        user: Joi.string(),
+        address: Joi.string(),
+        quantity: Joi.number().min(1),
+        payment_method: Joi.string()
+    })
+
+    const _id = req.params.orderId;
+    const validateResult = schema.validate(req.body);
+    if (validateResult.error) {
+        res.status(400)
+        return next(new Error(validateResult.error.details[0].message))
+    }
+    const body = validateResult.value;
+    if (body.product) {
+        const product = await Product.findById(body.product)
+        console.log(product);
+         body.price = product.price
+    }
+    const result = await Order.findOneAndUpdate({ _id }, { $set: body }, { new: true });
+    res.json({ result })
+
 }
 
-module.exports = { getOrders, placeOrder, deleteOrder }
+module.exports = { getOrders, placeOrder, deleteOrder, updateOrder }
+
+
+
